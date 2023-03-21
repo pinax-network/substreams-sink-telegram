@@ -1,0 +1,11 @@
+*.spkg
+node_modules
+Cargo.lock
+target
+*.js
+*-linux
+*-macos
+*-win.exe
+dist
+*.log
+data
