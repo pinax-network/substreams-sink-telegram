@@ -2,9 +2,9 @@ import { Substreams, download, unpack } from "substreams";
 import { timeout } from "./src/utils";
 
 // default substreams options
-export const MESSAGE_TYPE_NAME = 'pinax.substreams.sink.social.v1.Messages'
+export const MESSAGE_TYPE_NAME = 'pinax.substreams.sink.socials.v1.Messages'
 export const DEFAULT_API_TOKEN_ENV = 'SUBSTREAMS_API_TOKEN'
-export const DEFAULT_OUTPUT_MODULE = 'social_out'
+export const DEFAULT_OUTPUT_MODULE = 'socials_out'
 export const DEFAULT_SUBSTREAMS_ENDPOINT = 'https://mainnet.eth.streamingfast.io:443'
 
 export async function run(spkg: string, options: {
@@ -44,14 +44,14 @@ export async function run(spkg: string, options: {
 
     // Find Protobuf message types from registry
     const { registry } = unpack(binary);
-    const SocialMessages = registry.findMessage(MESSAGE_TYPE_NAME);
-    if (!SocialMessages) throw new Error(`Could not find [${MESSAGE_TYPE_NAME}] message type`);
+    const SocialsMessages = registry.findMessage(MESSAGE_TYPE_NAME);
+    if (!SocialsMessages) throw new Error(`Could not find [${MESSAGE_TYPE_NAME}] message type`);
 
     substreams.on("mapOutput", (output: any) => {
         if (!output.data.value.typeUrl.match(MESSAGE_TYPE_NAME)) return;
-        const decoded = SocialMessages.fromBinary(output.data.value.value);
-        for (const socialMessages of decoded.messages) {
-            console.log(socialMessages);
+        const decoded = SocialsMessages.fromBinary(output.data.value.value);
+        for (const socialsMessages of decoded.messages) {
+            console.log(socialsMessages);
         }
     });
 
