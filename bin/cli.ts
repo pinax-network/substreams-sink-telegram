@@ -4,6 +4,10 @@ import { Command } from "commander";
 import { run } from "../index";
 import pkg from "../package.json";
 import {
+    DEFAULT_ADDRESS,
+    DEFAULT_PORT,
+    DEFAULT_USERNAME,
+    DEFAULT_PASSWORD,
     DEFAULT_API_TOKEN_ENV,
     DEFAULT_OUTPUT_MODULE,
     DEFAULT_SUBSTREAMS_ENDPOINT,
@@ -25,6 +29,10 @@ program.command('run')
     .option('--substreams-api-token-envvar <string>', 'Environnement variable name of the API token for the substream endpoint', DEFAULT_API_TOKEN_ENV)
     .option('--delay-before-start <int>', '[OPERATOR] Amount of time in milliseconds (ms) to wait before starting any internal processes, can be used to perform to maintenance on the pod before actually letting it starts', '0')
     // custom options
+    .option('-u --username <string>', 'RabbitMQ username.', DEFAULT_USERNAME)
+    .option('-P --password <string>', 'RabbitMQ password.', DEFAULT_PASSWORD)
+    .option('-p --port <int>', 'Listens on port number.', String(DEFAULT_PORT))
+    .option('-a --address <string>', 'Address to use', DEFAULT_ADDRESS)
     .action(run)
 
 program.command('completion').description('Generate the autocompletion script for the specified shell')
