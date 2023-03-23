@@ -45,9 +45,12 @@ export class RabbitMq {
             await this.channel.consume(QUEUE_NAME, async (msg) => {
                 if (msg !== null) {
                     await fn(msg.content.toString());
+
+                    // Handle rate limiting here
+
                     this.channel!.ack(msg);
                 } else {
-                    console.log('Consumer cancelled by server');
+                    console.log('Consumer cancelled by server'); // Change with proper error message
                 }
             });
         }
