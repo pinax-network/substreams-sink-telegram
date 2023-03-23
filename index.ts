@@ -1,10 +1,11 @@
 import { Substreams, download, unpack } from "substreams";
-import { initQueue, addToQueue } from "./src/rabbitmq";
+import { RabbitMq } from "./src/rabbitmq";
+import { Telegram } from "./src/telegram";
 import { timeout } from "./src/utils";
 
 // default substreams options
 export const MESSAGE_TYPE_NAME = 'pinax.substreams.sink.winston.v1.LoggerOperations';
-export const DEFAULT_API_TOKEN_ENV = 'SUBSTREAMS_API_TOKEN';
+export const DEFAULT_SUBSTREAMS_API_TOKEN_ENV = 'SUBSTREAMS_API_TOKEN';
 export const DEFAULT_OUTPUT_MODULE = 'log_out';
 export const DEFAULT_SUBSTREAMS_ENDPOINT = 'https://mainnet.eth.streamingfast.io:443';
 
@@ -13,6 +14,9 @@ export const DEFAULT_USERNAME = 'guest';
 export const DEFAULT_PASSWORD = 'guest';
 export const DEFAULT_ADDRESS = 'localhost';
 export const DEFAULT_PORT = 5672;
+
+// default telegram options
+export const DEFAULT_TELEGRAM_API_TOKEN_ENV = 'TELEGRAM_API_TOKEN';
 
 export async function run(spkg: string, options: {
     // substreams options
@@ -28,12 +32,19 @@ export async function run(spkg: string, options: {
     password?: string,
     address?: string,
     port?: string,
+    // telegram options
+    telegramApiTokenEnvvar?: string,
+    telegramApiToken?: string,
 } = {}) {
     // Substreams options
     const outputModule = options.outputModule ?? DEFAULT_OUTPUT_MODULE
     const substreamsEndpoint = options.substreamsEndpoint ?? DEFAULT_SUBSTREAMS_ENDPOINT
-    const api_token_envvar = options.substreamsApiTokenEnvvar ?? DEFAULT_API_TOKEN_ENV
-    const api_token = options.substreamsApiToken ?? process.env[api_token_envvar]
+    const substreams_api_token_envvar = options.substreamsApiTokenEnvvar ?? DEFAULT_SUBSTREAMS_API_TOKEN_ENV
+    const substreams_api_token = options.substreamsApiToken ?? process.env[substreams_api_token_envvar]
+
+    // Telegram options
+    const telegram_api_token_envvar = options.telegramApiTokenEnvvar ?? DEFAULT_TELEGRAM_API_TOKEN_ENV
+    const telegram_api_token = options.telegramApiToken ?? process.env[telegram_api_token_envvar]
 
     // user options
     const username = options.username ?? DEFAULT_USERNAME;
@@ -43,7 +54,8 @@ export async function run(spkg: string, options: {
 
     // Required
     if (!outputModule) throw new Error('[output-module] is required')
-    if (!api_token) throw new Error('[substreams-api-token] is required')
+    if (!substreams_api_token) throw new Error('[substreams-api-token] is required')
+    if (!telegram_api_token) throw new Error('[telegram_api_token] is required')
 
     // Delay before start
     if (options.delayBeforeStart) await timeout(Number(options.delayBeforeStart) * 1000);
@@ -56,28 +68,35 @@ export async function run(spkg: string, options: {
         host: substreamsEndpoint,
         startBlockNum: options.startBlock,
         stopBlockNum: options.stopBlock,
-        authorization: api_token,
+        authorization: substreams_api_token,
     });
 
-    // RabbitMQ
-    await initQueue(username, password, address, port);
+    // Initialize RabbitMQ
+    const rabbitMq = new RabbitMq(username, password, address, port);
+    await rabbitMq.initQueue();
+
+    // Initialize Telegram bot
+    const telegramBot = new Telegram(telegram_api_token);
 
     // Find Protobuf message types from registry
     const { registry } = unpack(binary);
     const SocialsMessages = registry.findMessage(MESSAGE_TYPE_NAME);
     if (!SocialsMessages) throw new Error(`Could not find [${MESSAGE_TYPE_NAME}] message type`);
 
-    substreams.on("mapOutput", (output: any) => {
+    substreams.on("mapOutput", async (output: any) => {
         if (!output.data.value.typeUrl.match(MESSAGE_TYPE_NAME)) return;
         const decoded = SocialsMessages.fromBinary(output.data.value.value);
-        // for (const socialsMessage of decoded.messages) {
-        //     console.log(socialsMessages);
-        // }
 
+        // Send messages to queue
         for (const socialsMessage of decoded.operations) {
-            addToQueue(socialsMessage);
-            console.log(socialsMessage);
+            rabbitMq.sendToQueue(socialsMessage);
         }
+
+        // Consumes messages from queue
+        await rabbitMq.consumeQueue(async (socialsMessage: string) => {
+            await telegramBot.sendMessage(socialsMessage);
+        });
+
     });
 
     // start streaming Substream

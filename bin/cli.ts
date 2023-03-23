@@ -8,9 +8,10 @@ import {
     DEFAULT_PORT,
     DEFAULT_USERNAME,
     DEFAULT_PASSWORD,
-    DEFAULT_API_TOKEN_ENV,
+    DEFAULT_SUBSTREAMS_API_TOKEN_ENV,
     DEFAULT_OUTPUT_MODULE,
     DEFAULT_SUBSTREAMS_ENDPOINT,
+    DEFAULT_TELEGRAM_API_TOKEN_ENV
 } from "../index";
 
 const program = new Command();
@@ -26,13 +27,16 @@ program.command('run')
     .option('-s --start-block <int>', 'Start block to stream from (defaults to -1, which means the initialBlock of the first module you are streaming)')
     .option('-t --stop-block <string>', 'Stop block to end stream at, inclusively')
     .option('--substreams-api-token <string>', 'API token for the substream endpoint')
-    .option('--substreams-api-token-envvar <string>', 'Environnement variable name of the API token for the substream endpoint', DEFAULT_API_TOKEN_ENV)
+    .option('--substreams-api-token-envvar <string>', 'Environnement variable name of the API token for the substream endpoint', DEFAULT_SUBSTREAMS_API_TOKEN_ENV)
     .option('--delay-before-start <int>', '[OPERATOR] Amount of time in milliseconds (ms) to wait before starting any internal processes, can be used to perform to maintenance on the pod before actually letting it starts', '0')
     // custom options
     .option('-U --username <string>', 'RabbitMQ username.', DEFAULT_USERNAME)
     .option('-P --password <string>', 'RabbitMQ password.', DEFAULT_PASSWORD)
     .option('-p --port <int>', 'Listens on port number.', String(DEFAULT_PORT))
     .option('-a --address <string>', 'Address to use', DEFAULT_ADDRESS)
+    // telegram options
+    .option('--telegram-api-token <string>', 'API token for the Telegram bot')
+    .option('--telegram-api-token-envvar <string>', 'Environnement variable name of the API token for the Telegram bot', DEFAULT_TELEGRAM_API_TOKEN_ENV)
     .action(run)
 
 program.command('completion').description('Generate the autocompletion script for the specified shell')

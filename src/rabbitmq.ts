@@ -1,18 +1,55 @@
 import { logger } from "./logger";
 import client, { Connection, Channel } from "amqplib";
 
-const QUEUE_NAME: string = 'messages'; // Replace with map module hash
+const QUEUE_NAME: string = 'messages'; // Replace with map module hash (needs update from 'substreams-js' lib)
 
-let connection: Connection;
-let channel: Channel
+type ConsumeFunction = {
+    (message: string): Promise<void>;
+};
 
-export async function initQueue(username: string, password: string, address: string, port: number) {
-    connection = await client.connect(`amqp://${username}:${password}@${address}:${port}`);
+export class RabbitMq {
+    private readonly username: string;
+    private readonly password: string;
+    private readonly address: string;
+    private readonly port: number;
 
-    channel = await connection.createChannel();
-    await channel.assertQueue(QUEUE_NAME);
-}
+    private connection?: Connection;
+    private channel?: Channel;
 
-export function addToQueue(message: any) {
-    channel.sendToQueue(QUEUE_NAME, Buffer.from(JSON.stringify(message)));
+    constructor(username: string, password: string, address: string, port: number) {
+        this.username = username;
+        this.password = password;
+        this.address = address;
+        this.port = port;
+    }
+
+    public async initQueue() {
+        this.connection = await client.connect(`amqp://${this.username}:${this.password}@${this.address}:${this.port}`);
+
+        this.channel = await this.connection.createChannel();
+        await this.channel.assertQueue(QUEUE_NAME);
+    }
+
+    public sendToQueue(message: any) {
+        if (!this.channel) {
+            // err
+        } else {
+            this.channel.sendToQueue(QUEUE_NAME, Buffer.from(JSON.stringify(message)));
+        }
+    }
+
+    public async consumeQueue(fn: ConsumeFunction) {
+        if (!this.channel) {
+            // err
+        } else {
+            await this.channel.consume(QUEUE_NAME, async (msg) => {
+                if (msg !== null) {
+                    await fn(msg.content.toString());
+                    this.channel!.ack(msg);
+                } else {
+                    console.log('Consumer cancelled by server');
+                }
+            });
+        }
+    }
 }
