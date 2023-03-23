@@ -7,7 +7,7 @@ export class Telegram {
         this.bot = new TelegramBot(token, { polling: true });
     }
 
-    public async sendMessage(message: string) {
-        await this.bot.sendMessage('@substreams_socials_sink_test', message);
+    public async sendMessage(chatId: string, message: string) {
+        await this.bot.sendMessage(chatId, message);
     }
 }

@@ -94,7 +94,8 @@ export async function run(spkg: string, options: {
 
         // Consumes messages from queue
         await rabbitMq.consumeQueue(async (socialsMessage: string) => {
-            await telegramBot.sendMessage(socialsMessage);
+            // Use an array of chatId
+            await telegramBot.sendMessage('@substreams_socials_sink_test', socialsMessage);
         });
 
     });
