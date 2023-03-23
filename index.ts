@@ -3,11 +3,9 @@ import { initQueue, addToQueue } from "./src/rabbitmq";
 import { timeout } from "./src/utils";
 
 // default substreams options
-// export const MESSAGE_TYPE_NAME = 'pinax.substreams.sink.socials.v1.Messages';
-export const MESSAGE_TYPE_NAME = 'pinax.substreams.sink.prometheus.v1.PrometheusOperations';
+export const MESSAGE_TYPE_NAME = 'pinax.substreams.sink.winston.v1.LoggerOperations';
 export const DEFAULT_API_TOKEN_ENV = 'SUBSTREAMS_API_TOKEN';
-// export const DEFAULT_OUTPUT_MODULE = 'socials_out';
-export const DEFAULT_OUTPUT_MODULE = 'prom_out';
+export const DEFAULT_OUTPUT_MODULE = 'log_out';
 export const DEFAULT_SUBSTREAMS_ENDPOINT = 'https://mainnet.eth.streamingfast.io:443';
 
 // default user options
@@ -77,8 +75,8 @@ export async function run(spkg: string, options: {
         // }
 
         for (const socialsMessage of decoded.operations) {
-            addToQueue(socialsMessage.name);
-            console.log(socialsMessage.name);
+            addToQueue(socialsMessage);
+            console.log(socialsMessage);
         }
     });
 
