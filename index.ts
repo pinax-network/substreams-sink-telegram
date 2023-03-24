@@ -4,9 +4,9 @@ import { Telegram } from "./src/telegram";
 import { timeout } from "./src/utils";
 
 // default substreams options
-export const MESSAGE_TYPE_NAME = 'pinax.substreams.sink.winston.v1.LoggerOperations';
+export const MESSAGE_TYPE_NAME = 'substreams.entity.v1.EntityChanges';
 export const DEFAULT_SUBSTREAMS_API_TOKEN_ENV = 'SUBSTREAMS_API_TOKEN';
-export const DEFAULT_OUTPUT_MODULE = 'log_out';
+export const DEFAULT_OUTPUT_MODULE = 'entity_out';
 export const DEFAULT_SUBSTREAMS_ENDPOINT = 'https://mainnet.eth.streamingfast.io:443';
 
 // default user options
@@ -80,22 +80,25 @@ export async function run(spkg: string, options: {
 
     // Find Protobuf message types from registry
     const { registry } = unpack(binary);
-    const SocialsMessages = registry.findMessage(MESSAGE_TYPE_NAME);
-    if (!SocialsMessages) throw new Error(`Could not find [${MESSAGE_TYPE_NAME}] message type`);
+    const EntityChanges = registry.findMessage(MESSAGE_TYPE_NAME);
+    if (!EntityChanges) throw new Error(`Could not find [${MESSAGE_TYPE_NAME}] message type`);
 
     substreams.on("mapOutput", async (output: any) => {
         if (!output.data.value.typeUrl.match(MESSAGE_TYPE_NAME)) return;
-        const decoded = SocialsMessages.fromBinary(output.data.value.value);
+        const decoded = EntityChanges.fromBinary(output.data.value.value);
+
+
 
         // Send messages to queue
-        for (const socialsMessage of decoded.operations) {
-            rabbitMq.sendToQueue(socialsMessage);
+        for (const entityChanges of decoded.entityChanges) {
+            console.log(entityChanges);
+            rabbitMq.sendToQueue(entityChanges);
         }
 
         // Consumes messages from queue
-        await rabbitMq.consumeQueue(async (socialsMessage: string) => {
+        await rabbitMq.consumeQueue(async (entityChanges: string) => {
             // Use an array of chatId
-            await telegramBot.sendMessage('@substreams_socials_sink_test', socialsMessage);
+            await telegramBot.sendMessage('@substreams_socials_sink_test', entityChanges);
         });
 
     });
