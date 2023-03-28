@@ -4,6 +4,7 @@ import { Command } from "commander";
 import { run } from "../index";
 import pkg from "../package.json";
 import {
+    DEFAULT_CURSOR_FILE,
     DEFAULT_ADDRESS,
     DEFAULT_PORT,
     DEFAULT_USERNAME,
@@ -29,6 +30,7 @@ program.command('run')
     .option('--substreams-api-token <string>', 'API token for the substream endpoint')
     .option('--substreams-api-token-envvar <string>', 'Environnement variable name of the API token for the substream endpoint', DEFAULT_SUBSTREAMS_API_TOKEN_ENV)
     .option('--delay-before-start <int>', '[OPERATOR] Amount of time in milliseconds (ms) to wait before starting any internal processes, can be used to perform to maintenance on the pod before actually letting it starts', '0')
+    .option('--cursor-file <string>', 'cursor lock file', DEFAULT_CURSOR_FILE)
     // custom options
     .option('-U --username <string>', 'RabbitMQ username.', DEFAULT_USERNAME)
     .option('-P --password <string>', 'RabbitMQ password.', DEFAULT_PASSWORD)
