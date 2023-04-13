@@ -38,4 +38,4 @@ $ substreams-sink-socials run [options] <spkg>
   - [x] Load URL or IPFS
   - [ ] Read from `*.spkg` local filesystem
   - [ ] Read from `substreams.yaml` local filesystem
-- [ ] Handle `cursor` restart
+- [x] Handle `cursor` restart
