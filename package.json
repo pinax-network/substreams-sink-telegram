@@ -1,13 +1,13 @@
 {
-    "name": "substreams-sink-socials",
+    "name": "substreams-sink-telegram",
     "version": "0.0.1",
-    "description": "Substreams socials sink module",
+    "description": "Substreams telegram sink module",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "bin": {
-        "substreams-sink-socials": "dist/bin/cli.js"
+        "substreams-sink-telegram": "dist/bin/cli.js"
     },
-    "repository": "git@github.com:pinax-network/substreams-sink-socials.git",
+    "repository": "git@github.com:pinax-network/substreams-sink-telegram.git",
     "keywords": [
         "substreams",
         "streamingfast",

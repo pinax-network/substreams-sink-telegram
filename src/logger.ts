@@ -3,7 +3,7 @@ import winston from 'winston';
 export const logger = winston.createLogger({
   level: 'info',
   format: winston.format.json(),
-  defaultMeta: { service: 'substreams-sink-socials' },
+  defaultMeta: { service: 'substreams-sink-telegram' },
   transports: [
     //
     // - Write all logs with importance level of `error` or less to `error.log`

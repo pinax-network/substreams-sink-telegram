@@ -1,14 +1,14 @@
-# [`Substreams`](https://substreams.streamingfast.io/) Socials CLI `Node.js`
+# [`Substreams`](https://substreams.streamingfast.io/) [Telegram](https://telegram.org/) CLI `Node.js`
 
-<!-- [<img alt="github" src="" height="20">](https://github.com/pinax-network/substreams-sink-socials) -->
-<!-- [<img alt="npm" src="" height="20">](https://www.npmjs.com/package/substreams-sink-socials) -->
-<!-- [<img alt="GitHub Workflow Status" src="" height="20">](https://github.com/pinax-network/substreams-sink-socials/actions?query=branch%3Amain) -->
+<!-- [<img alt="github" src="" height="20">](https://github.com/pinax-network/substreams-sink-telegram) -->
+<!-- [<img alt="npm" src="" height="20">](https://www.npmjs.com/package/substreams-sink-telegram) -->
+<!-- [<img alt="GitHub Workflow Status" src="" height="20">](https://github.com/pinax-network/substreams-sink-telegram/actions?query=branch%3Amain) -->
 
-> `substreams-sink-socials` is a tool that allows developers to pipe data extracted from a blockchain to their favorite messaging social platform.
+> `substreams-sink-telegram` is a tool that allows developers to pipe data extracted from a blockchain to the Telegram messaging social platform.
 
 ## 📖 Documentation
 
-<!-- ### https://www.npmjs.com/package/substreams-sink-socials -->
+<!-- ### https://www.npmjs.com/package/substreams-sink-telegram -->
 
 ### Further resources
 
@@ -17,19 +17,19 @@
 ### Protobuf
 
 ## CLI
-[**Use pre-built binaries**](https://github.com/pinax-network/substreams-sink-socials/releases)
+[**Use pre-built binaries**](https://github.com/pinax-network/substreams-sink-telegram/releases)
 - [x] MacOS
 - [x] Linux
 - [x] Windows
 
 **Install** globally via npm
 ```
-$ npm install -g substreams-sink-socials
+$ npm install -g substreams-sink-telegram
 ```
 
 **Run**
 ```
-$ substreams-sink-socials run [options] <spkg>
+$ substreams-sink-telegram run [options] <spkg>
 ```
 
 ## Features
