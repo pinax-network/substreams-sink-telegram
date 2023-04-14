@@ -13,6 +13,7 @@
 ### Further resources
 
 - [**Substreams** documentation](https://substreams.streamingfast.io)
+- [**Telegram** Bot API documentation](https://core.telegram.org/bots/api)
 
 ### Protobuf
 
