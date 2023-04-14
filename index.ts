@@ -1,5 +1,7 @@
 import { download } from "substreams";
 import { run, logger, RunOptions } from "substreams-sink";
+import PQueue from 'p-queue';
+
 import { Telegram } from "./src/telegram";
 
 import pkg from "./package.json";
@@ -12,6 +14,7 @@ export const DEFAULT_TELEGRAM_API_TOKEN_ENV = 'TELEGRAM_API_TOKEN';
 
 // Custom user options interface
 interface ActionOptions extends RunOptions {
+    chatId: string,
     telegramApiTokenEnvvar: string,
     telegramApiToken: string,
 }
@@ -21,7 +24,7 @@ export async function action(manifest: string, moduleName: string, options: Acti
     const spkg = await download(manifest);
 
     // Get command options
-    const { telegramApiTokenEnvvar, telegramApiToken } = options;
+    const { chatId, telegramApiTokenEnvvar, telegramApiToken } = options;
 
     // Telegram options
     const telegram_api_token = telegramApiToken ?? process.env[telegramApiTokenEnvvar];
@@ -37,11 +40,11 @@ export async function action(manifest: string, moduleName: string, options: Acti
     // Run substreams
     const substreams = run(spkg, moduleName, options);
 
+    const queue = new PQueue({ concurrency: 1, intervalCap: 1, interval: 1000 });
+
     substreams.on("anyMessage", async (message: any) => {
-
-        await telegramBot.sendMessage('@substreams_socials_sink_test', message);
+        await queue.add(() => telegramBot.sendMessage(chatId, JSON.stringify(message)));
         logger.info(JSON.stringify({ message: message }));
-
     });
 
     substreams.start(options.delayBeforeStart);
