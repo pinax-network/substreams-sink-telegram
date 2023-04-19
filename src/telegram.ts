@@ -13,6 +13,7 @@ export class Telegram {
     public async sendMessage(chatId: string, message: string) {
         try {
             await this.bot.sendMessage(chatId, message);
+            logger.info(message);
         } catch (error: any) {
             if (error.code === 'ETELEGRAM') {
                 switch (error.response.statusCode) {

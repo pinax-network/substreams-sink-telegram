@@ -44,7 +44,6 @@ export async function action(manifest: string, moduleName: string, options: Acti
 
     substreams.on("anyMessage", async (message: any) => {
         await queue.add(() => telegramBot.sendMessage(chatId, JSON.stringify(message)));
-        logger.info(JSON.stringify({ message: message }));
     });
 
     substreams.start(options.delayBeforeStart);
