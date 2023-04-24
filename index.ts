@@ -29,6 +29,9 @@ export async function action(manifest: string, moduleName: string, options: Acti
     // Get command options
     const { config, telegramApiTokenEnvvar, telegramApiToken } = options;
 
+    // Telegram options
+    const telegram_api_token = telegramApiToken ?? process.env[telegramApiTokenEnvvar];
+
     // Read config file
     let configs: any[];
     const ext: string = path.extname(config);
@@ -39,9 +42,6 @@ export async function action(manifest: string, moduleName: string, options: Acti
     } else if (ext === '.yml' || ext === '.yaml') {
         configs = YAML.parse(rawConfigs);
     }
-
-    // Telegram options
-    const telegram_api_token = telegramApiToken ?? process.env[telegramApiTokenEnvvar];
 
     if (!telegram_api_token) {
         logger.error('[telegram_api_token] is required');
