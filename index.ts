@@ -55,16 +55,16 @@ export async function action(manifest: string, moduleName: string, options: Acti
 
                 if (entityChange.entity === conf.entity) {
 
-                    // Do formatting
-
                     let formattedMessage: string = conf.message;
 
                     entityChange.fields.forEach(async (field) => {
                         formattedMessage = formattedMessage.replaceAll(`{${field.name}}`, field.newValue?.typed.value as string); // TODO make a null check
                     });
+                    // TODO fix MarkdownV2
+                    // formattedMessage = formattedMessage.replace(/([|{\[\]*_~}+)(#>!=\-.])/gm, '\\$1');
 
                     conf.chat_ids.forEach(async (chatId: string) => {
-                        await queue.add(() => telegramBot.sendMessage(chatId, JSON.stringify(formattedMessage)));
+                        await queue.add(() => telegramBot.sendMessage(chatId, formattedMessage));
                     });
                 }
             });
