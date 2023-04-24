@@ -18,7 +18,7 @@ export class Telegram {
 
     public async sendMessage(chatId: string, message: string) {
         try {
-            await this.bot.sendMessage(chatId, message, { parse_mode: "Markdown" }); // TODO fix MarkdownV2
+            await this.bot.sendMessage(chatId, message, { parse_mode: "MarkdownV2" }); // TODO fix MarkdownV2
             logger.info(message);
         } catch (error: any) {
             if (error.code === 'ETELEGRAM') {

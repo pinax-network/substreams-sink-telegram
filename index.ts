@@ -61,7 +61,7 @@ export async function action(manifest: string, moduleName: string, options: Acti
                         formattedMessage = formattedMessage.replaceAll(`{${field.name}}`, field.newValue?.typed.value as string); // TODO make a null check
                     });
                     // TODO fix MarkdownV2
-                    // formattedMessage = formattedMessage.replace(/([|{\[\]*_~}+)(#>!=\-.])/gm, '\\$1');
+                    formattedMessage = formattedMessage.replace(/([|{}+#>!=\-.])/gm, '\\$1');
 
                     conf.chat_ids.forEach(async (chatId: string) => {
                         await queue.add(() => telegramBot.sendMessage(chatId, formattedMessage));
