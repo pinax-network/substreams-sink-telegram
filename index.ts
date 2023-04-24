@@ -1,8 +1,9 @@
-import { download } from "substreams";
+import { EntityChanges, download } from "substreams";
 import { run, logger, RunOptions } from "substreams-sink";
-import PQueue from 'p-queue';
+import fs from "fs";
+import PQueue from "p-queue";
 
-import { Telegram } from "./src/telegram";
+import { Telegram, TelegramConfig } from "./src/telegram";
 
 import pkg from "./package.json";
 
@@ -14,7 +15,7 @@ export const DEFAULT_TELEGRAM_API_TOKEN_ENV = 'TELEGRAM_API_TOKEN';
 
 // Custom user options interface
 interface ActionOptions extends RunOptions {
-    chatId: string,
+    config: string,
     telegramApiTokenEnvvar: string,
     telegramApiToken: string,
 }
@@ -24,7 +25,10 @@ export async function action(manifest: string, moduleName: string, options: Acti
     const spkg = await download(manifest);
 
     // Get command options
-    const { chatId, telegramApiTokenEnvvar, telegramApiToken } = options;
+    const { config, telegramApiTokenEnvvar, telegramApiToken } = options;
+
+    // Read config file
+    let configs: any[] = JSON.parse(fs.readFileSync(config, 'utf-8'));
 
     // Telegram options
     const telegram_api_token = telegramApiToken ?? process.env[telegramApiTokenEnvvar];
@@ -40,10 +44,31 @@ export async function action(manifest: string, moduleName: string, options: Acti
     // Run substreams
     const substreams = run(spkg, moduleName, options);
 
+    // Initialize PQueue
     const queue = new PQueue({ concurrency: 1, intervalCap: 1, interval: 1000 });
 
-    substreams.on("anyMessage", async (message: any) => {
-        await queue.add(() => telegramBot.sendMessage(chatId, JSON.stringify(message)));
+    substreams.on("anyMessage", async (message: EntityChanges) => {
+
+        message.entityChanges.forEach(async (entityChange) => {
+
+            configs.forEach(async (conf: TelegramConfig) => {
+
+                if (entityChange.entity === conf.entity) {
+
+                    // Do formatting
+
+                    let formattedMessage: string = conf.message;
+
+                    entityChange.fields.forEach(async (field) => {
+                        formattedMessage = formattedMessage.replaceAll(`{${field.name}}`, field.newValue?.typed.value as string); // TODO make a null check
+                    });
+
+                    conf.chat_ids.forEach(async (chatId: string) => {
+                        await queue.add(() => telegramBot.sendMessage(chatId, JSON.stringify(formattedMessage)));
+                    });
+                }
+            });
+        });
     });
 
     substreams.start(options.delayBeforeStart);

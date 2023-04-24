@@ -1,0 +1,23 @@
+[
+    {
+        "entity": "Transfer",
+        "chat_ids": [
+            "@substreams_socials_sink_test"
+        ],
+        "message": "This **{user_id}** made a transaction with id [{trx_id}](https://blocks.io/trx_id/{trx_id})"
+    },
+    {
+        "entity": "Transfer",
+        "chat_ids": [
+            "@substreams_socials_sink_test"
+        ],
+        "message": "PRIVATE GROUP: This {user_id} made a transaction with id {trx_id}"
+    },
+    {
+        "entity": "Grants",
+        "chat_ids": [
+            "@substreams_socials_sink_test"
+        ],
+        "message": "This {grant}"
+    }
+]

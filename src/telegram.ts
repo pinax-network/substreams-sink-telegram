@@ -3,6 +3,12 @@ import { logger } from "substreams-sink";
 
 import { timeout } from "./utils";
 
+export interface TelegramConfig {
+    entity: string;
+    chat_ids: string[];
+    message: string;
+}
+
 export class Telegram {
     private readonly bot: TelegramBot;
 
