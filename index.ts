@@ -1,6 +1,7 @@
 import { EntityChanges, download } from "substreams";
 import { run, logger, RunOptions } from "substreams-sink";
 import fs from "fs";
+import path from "path";
 import PQueue from "p-queue";
 
 import { Telegram, TelegramConfig } from "./src/telegram";
@@ -28,7 +29,14 @@ export async function action(manifest: string, moduleName: string, options: Acti
     const { config, telegramApiTokenEnvvar, telegramApiToken } = options;
 
     // Read config file
-    let configs: any[] = JSON.parse(fs.readFileSync(config, 'utf-8'));
+    let configs: any[];
+    const ext: string = path.extname(config);
+
+    if (ext === '.json') {
+        configs = JSON.parse(fs.readFileSync(config, 'utf-8'));
+    } else if (ext === '.yml' || ext === '.yaml') {
+        // ...
+    }
 
     // Telegram options
     const telegram_api_token = telegramApiToken ?? process.env[telegramApiTokenEnvvar];
@@ -60,11 +68,9 @@ export async function action(manifest: string, moduleName: string, options: Acti
                     entityChange.fields.forEach(async (field) => {
                         formattedMessage = formattedMessage.replaceAll(`{${field.name}}`, field.newValue?.typed.value as string); // TODO make a null check
                     });
-                    // TODO fix MarkdownV2
-                    formattedMessage = formattedMessage.replace(/([|{}+#>!=\-.])/gm, '\\$1');
 
                     conf.chat_ids.forEach(async (chatId: string) => {
-                        await queue.add(() => telegramBot.sendMessage(chatId, formattedMessage));
+                        await queue.add(() => telegramBot.sendMessage(chatId, formattedMessage, conf.parse_mode));
                     });
                 }
             });

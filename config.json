@@ -8,10 +8,11 @@
     },
     {
         "entity": "Transfer",
+        "parse_mode": "HTML",
         "chat_ids": [
             "@substreams_socials_sink_test"
         ],
-        "message": "PRIVATE GROUP: This {user_id} made a ~transaction~ with id {trx_id}"
+        "message": "PRIVATE GROUP: This {user_id} made a <b>transaction</b> with id <a href=\"https://blocks.io/trx_id/{trx_id}\">{trx_id}</a>"
     },
     {
         "entity": "Grants",

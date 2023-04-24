@@ -1,10 +1,11 @@
-import TelegramBot from "node-telegram-bot-api";
+import TelegramBot, { ParseMode } from "node-telegram-bot-api";
 import { logger } from "substreams-sink";
 
 import { timeout } from "./utils";
 
 export interface TelegramConfig {
     entity: string;
+    parse_mode?: string;
     chat_ids: string[];
     message: string;
 }
@@ -16,10 +17,19 @@ export class Telegram {
         this.bot = new TelegramBot(token, { polling: true });
     }
 
-    public async sendMessage(chatId: string, message: string) {
+    public async sendMessage(chatId: string, message: string, parseMode: string = 'MarkdownV2') {
         try {
-            await this.bot.sendMessage(chatId, message, { parse_mode: "MarkdownV2" }); // TODO fix MarkdownV2
-            logger.info(message);
+            switch (parseMode) {
+                case 'MarkdownV2':
+                    message = message.replace(/([|{}+#>!=\-.])/gm, '\\$1');
+                    break;
+                case 'HTML':
+                    break;
+                default:
+                    break;
+            }
+
+            await this.bot.sendMessage(chatId, message, { parse_mode: parseMode as ParseMode });
         } catch (error: any) {
             if (error.code === 'ETELEGRAM') {
                 switch (error.response.statusCode) {
