@@ -1,6 +1,7 @@
 import { EntityChanges, download } from "substreams";
 import { run, logger, RunOptions } from "substreams-sink";
 import fs from "fs";
+import YAML from 'yaml'
 import path from "path";
 import PQueue from "p-queue";
 
@@ -31,11 +32,12 @@ export async function action(manifest: string, moduleName: string, options: Acti
     // Read config file
     let configs: any[];
     const ext: string = path.extname(config);
+    const rawConfigs = fs.readFileSync(config, 'utf-8');
 
     if (ext === '.json') {
-        configs = JSON.parse(fs.readFileSync(config, 'utf-8'));
+        configs = JSON.parse(rawConfigs);
     } else if (ext === '.yml' || ext === '.yaml') {
-        // ...
+        configs = YAML.parse(rawConfigs);
     }
 
     // Telegram options

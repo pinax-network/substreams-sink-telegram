@@ -1,0 +1,15 @@
+- entity: Transfer
+  chat_ids:
+    - "@substreams_socials_sink_test"
+  message: "This *{user_id}* made a _transaction_ with id [{trx_id}](https://blocks.io/trx_id/{trx_id})"
+
+- entity: Transfer
+  parse_mode: HTML
+  chat_ids:
+    - "@substreams_socials_sink_test"
+  message: "PRIVATE GROUP: This {user_id} made a <b>transaction</b> with id <a href=\"https://blocks.io/trx_id/{trx_id}\">{trx_id}</a>"
+
+- entity: Grants
+  chat_ids:
+    - "@substreams_socials_sink_test"
+  message: "This {grant}"
