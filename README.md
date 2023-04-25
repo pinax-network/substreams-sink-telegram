@@ -14,6 +14,8 @@
 
 - [**Substreams** documentation](https://substreams.streamingfast.io)
 - [**Telegram** Bot API documentation](https://core.telegram.org/bots/api)
+- [**Telegram** MarkdownV2 specifications](https://core.telegram.org/bots/api#markdownv2-style)
+- [**Telegram** HTML specifications](https://core.telegram.org/bots/api#html-style)
 
 ### Protobuf
 
