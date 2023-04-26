@@ -1,14 +1,18 @@
 import TelegramBot, { ParseMode } from "node-telegram-bot-api";
 import { logger } from "substreams-sink";
+import { z } from "zod";
 
 import { timeout } from "./utils";
 
-export interface TelegramConfig {
-    entity: string;
-    parse_mode?: string;
-    chat_ids: string[];
-    message: string;
-}
+const TelegramConfigSchema = z.object({
+    entity: z.string(),
+    parse_mode: z.enum(["MarkdownV2", "HTML"]).optional(),
+    chat_ids: z.array(z.string()),
+    message: z.string()
+})
+
+export const TelegramConfigsSchema = z.array(TelegramConfigSchema);
+export type TelegramConfig = z.infer<typeof TelegramConfigSchema>;
 
 export class Telegram {
     private readonly bot: TelegramBot;

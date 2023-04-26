@@ -4,8 +4,9 @@ import fs from "fs";
 import YAML from 'yaml'
 import path from "path";
 import PQueue from "p-queue";
+import { ZodError } from "zod";
 
-import { Telegram, TelegramConfig } from "./src/telegram";
+import { Telegram, TelegramConfig, TelegramConfigsSchema } from "./src/telegram";
 
 import pkg from "./package.json";
 
@@ -30,15 +31,25 @@ export async function action(manifest: string, moduleName: string, options: Acti
     const { config, telegramApiTokenEnvvar, telegramApiToken } = options;
 
     // Read config file
-    let configs: any[];
+    let configs: any[] = [];
     const ext: string = path.extname(config);
     const rawConfigs = fs.readFileSync(config, 'utf-8');
 
-    if (ext === '.json') {
-        configs = JSON.parse(rawConfigs);
-    } else if (ext === '.yml' || ext === '.yaml') {
-        configs = YAML.parse(rawConfigs);
+    try {
+        if (ext === '.json') {
+            configs = TelegramConfigsSchema.parse(JSON.parse(rawConfigs));
+        } else if (ext === '.yml' || ext === '.yaml') {
+            configs = TelegramConfigsSchema.parse(YAML.parse(rawConfigs));
+        }
+    } catch (error) {
+        if (error instanceof ZodError) {
+            logger.error(JSON.stringify(error));
+        } else {
+            logger.error(error);
+        }
+        process.exit(1);
     }
+
 
     // Telegram options
     const telegram_api_token = telegramApiToken ?? process.env[telegramApiTokenEnvvar];
