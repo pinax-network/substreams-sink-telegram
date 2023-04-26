@@ -1,7 +1,7 @@
 import { EntityChanges, download } from "substreams";
 import { run, logger, RunOptions } from "substreams-sink";
 import fs from "fs";
-import YAML from 'yaml'
+import YAML from "yaml";
 import path from "path";
 import PQueue from "p-queue";
 import { ZodError } from "zod";

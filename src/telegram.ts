@@ -9,7 +9,7 @@ const TelegramConfigSchema = z.object({
     parse_mode: z.enum(["MarkdownV2", "HTML"]).optional(),
     chat_ids: z.array(z.string()),
     message: z.string()
-})
+});
 
 export const TelegramConfigsSchema = z.array(TelegramConfigSchema);
 export type TelegramConfig = z.infer<typeof TelegramConfigSchema>;
