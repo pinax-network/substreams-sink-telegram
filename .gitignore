@@ -11,3 +11,6 @@ dist
 data
 build
 *.lock
+*-x64
+*-arm64
+*.exe
