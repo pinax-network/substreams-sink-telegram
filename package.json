@@ -36,16 +36,13 @@
     "scripts": {
         "prepublishOnly": "tsc",
         "build": "tsup index.ts bin/cli.ts --dts",
-        "pkg": "ncc build bin/cli.ts -o build && pkg --target linux-x64,mac-x64,win-x64,mac-arm64 --output substreams-telegram build/index.js"
+        "pkg": "ncc build bin/cli.ts -o build && pkg --target linux-x64,mac-x64,win-x64,mac-arm64 --output substreams-sink-telegram build/index.js"
     },
     "dependencies": {
-        "commander": "latest",
-        "dotenv": "latest",
         "node-telegram-bot-api": "latest",
         "substreams": "0.7.x",
         "substreams-sink": "0.3.x",
         "substreams-sink-socials": "0.0.x",
-        "winston": "latest",
         "zod": "latest"
     },
     "devDependencies": {
