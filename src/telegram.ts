@@ -1,4 +1,4 @@
-import TelegramBot, { ParseMode } from "node-telegram-bot-api";
+import TelegramBot, { type ParseMode } from "node-telegram-bot-api";
 import { logger } from "substreams-sink";
 import { z } from "zod";
 

@@ -1,10 +1,10 @@
-import { EntityChanges, download } from "substreams";
-import { run, logger, RunOptions } from "substreams-sink";
+import { fetchSubstream } from "@substreams/core";
+import { run, logger, cli } from "substreams-sink";
 import { Social } from "substreams-sink-socials";
 
-import { Telegram, TelegramConfigSchema } from "./src/telegram";
+import { Telegram, TelegramConfigSchema } from "./src/telegram.js";
 
-import pkg from "./package.json";
+import pkg from "./package.json" assert { type: "json" };
 
 logger.setName(pkg.name);
 export { logger };
@@ -13,15 +13,15 @@ export { logger };
 export const DEFAULT_TELEGRAM_API_TOKEN_ENV = 'TELEGRAM_API_TOKEN';
 
 // Custom user options interface
-interface ActionOptions extends RunOptions {
+interface ActionOptions extends cli.RunOptions {
     config: string,
     telegramApiTokenEnvvar: string,
     telegramApiToken: string,
 }
 
-export async function action(manifest: string, moduleName: string, options: ActionOptions) {
+export async function action(options: ActionOptions) {
     // Download substreams
-    const spkg = await download(manifest);
+    const spkg = await fetchSubstream(options.manifest!);
 
     // Get command options
     const { config, telegramApiTokenEnvvar, telegramApiToken } = options;
@@ -41,10 +41,10 @@ export async function action(manifest: string, moduleName: string, options: Acti
     const telegramBot = new Telegram(telegram_api_token);
 
     // Run substreams
-    const substreams = run(spkg, moduleName, options);
+    const substreams = run(spkg, options);
 
-    substreams.on("anyMessage", async (messages: EntityChanges) => {
-        await social.distributeMessages(messages, (chatId, message, config) => {
+    substreams.on("anyMessage", async (messages) => {
+        await social.distributeMessages(messages as any, (chatId, message, config) => {
             telegramBot.sendMessage(chatId, message, config);
         });
     });

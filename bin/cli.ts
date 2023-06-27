@@ -4,10 +4,11 @@ import { cli } from "substreams-sink";
 import { cli as cliSocial } from "substreams-sink-socials";
 
 import { action, DEFAULT_TELEGRAM_API_TOKEN_ENV } from "../index.js"
-import pkg from "../package.json";
+
+import pkg from "../package.json" assert { type: "json" };
 
 const program = cli.program(pkg);
-const command = cli.run(program, pkg);
+const command = cli.option(program, pkg);
 
 cliSocial.addSocialConfigOption(command);
 
